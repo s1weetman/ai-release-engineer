@@ -1,56 +1,116 @@
 # AI Release Engineer
 
-A production-oriented agentic AI system that plans, implements, tests, validates, and prepares software changes for human-approved release.
+A production-oriented agentic AI system and planned SaaS application that plans, implements, tests, validates, and prepares software changes for human-approved release.
 
 ## Why this project exists
 
 AI Release Engineer demonstrates how modern AI-assisted software engineering can be made safe, observable, testable, and useful in real delivery workflows. The system accepts a software change request, inspects a repository, produces an implementation plan, generates or modifies code, runs validation checks, and prepares a pull request while keeping a human approval gate before release.
 
-This is not a toy chatbot. The engineering focus is on agent orchestration, tool use, code quality, evaluation, security, CI/CD, observability, and production reliability.
+This is not a toy chatbot. The engineering focus is on agent orchestration, tool use, code quality, evaluation, security, CI/CD, observability, production reliability, and a usable SaaS control plane.
 
 ## What the system does
 
 At a high level, AI Release Engineer acts like a governed AI software engineer:
 
-1. A user gives it a bounded software change request.
-2. It inspects the target repository and gathers relevant context.
-3. An LLM produces a structured implementation plan.
-4. A human reviews and approves that plan.
-5. The system performs the change inside an isolated workspace.
-6. Automated tests, static analysis, type checks, and security checks validate the result.
-7. The system creates an evidence bundle showing exactly what changed and what passed or failed.
-8. A human approves the release candidate.
-9. The system prepares a GitHub pull request.
-10. It never automatically merges or deploys production code.
+1. A user signs in to a personal or organization workspace.
+2. The user selects a connected GitHub repository.
+3. The user submits a bounded software change request.
+4. The system inspects the repository and gathers relevant context.
+5. An LLM produces a structured implementation plan.
+6. A human reviews and approves that plan.
+7. The system performs the change inside an isolated workspace.
+8. Automated tests, static analysis, type checks, and security checks validate the result.
+9. The system creates an evidence bundle showing exactly what changed and what passed or failed.
+10. A human approves the release candidate.
+11. The system prepares a GitHub pull request.
+12. It never automatically merges or deploys production code.
+
+## SaaS product model
+
+The finished product will provide a web front end and support two ways of working:
+
+- **Personal workspace** — an individual user can connect repositories, configure an LLM provider, and run AI-assisted changes without belonging to an organization.
+- **Organization workspace** — an organization can contain multiple users and shared repository/provider configuration.
+
+For the initial SaaS role model, organization membership stays intentionally simple:
+
+- **Admin** — manages organization settings, members, integrations, repository connections, and credentials; can also perform development workflows.
+- **Developer** — creates and reviews AI-assisted change runs against repositories they are allowed to use.
+
+A separate tester role is not planned initially because automated validation is part of the product workflow. Additional roles such as Reviewer or Approver can be introduced later if real requirements justify them.
+
+A user may work in a personal workspace and may also belong to one or more organization workspaces.
+
+## Bring Your Own Key (BYOK)
+
+The SaaS product is designed to let a personal workspace or organization configure its own supported LLM provider credentials.
+
+Examples include OpenAI- or Anthropic-compatible API credentials.
+
+Security rules for provider credentials:
+
+- credentials are entered through the authenticated web application;
+- raw secret values are never returned to the browser after storage;
+- secrets are encrypted at rest and accessed only by backend services that need them;
+- secrets never appear in logs, traces, evidence bundles, or source control;
+- organization credentials are managed by organization admins;
+- credentials can be replaced or revoked without changing application code.
+
+The provider layer remains vendor-neutral so users are not locked to one LLM vendor.
+
+## GitHub connection model
+
+GitHub is the first supported source-control platform.
+
+The preferred connection model is a **GitHub App installation**, not a broad personal access token. A GitHub App can request narrowly scoped repository permissions, issue short-lived installation tokens, and be installed only on selected repositories.
+
+Users will be able to:
+
+- connect GitHub to a personal or organization workspace;
+- choose which repositories the product may access;
+- view connected repositories;
+- submit change requests against an allowed repository;
+- allow the system to create a branch and pull request only after the required approvals.
+
+Other source-control systems can be added later behind the same repository integration boundary.
 
 ## Target workflow
 
 ```text
+Sign In
+   |
+   v
+Personal / Organization Workspace
+   |
+   v
+Connected GitHub Repository
+   |
+   v
 Change Request
-    |
-    v
+   |
+   v
 Repository Analysis
-    |
-    v
+   |
+   v
 AI Implementation Plan
-    |
-    v
+   |
+   v
 Human Plan Approval
-    |
-    v
+   |
+   v
 Isolated Code Change
-    |
-    +--> Unit / Integration Tests
-    +--> Lint / Type Checks
-    +--> Security Scans
-    |
-    v
+   |
+   +--> Unit / Integration Tests
+   +--> Lint / Type Checks
+   +--> Security Scans
+   |
+   v
 AI Review + Evidence Bundle
-    |
-    v
+   |
+   v
 Human Release Approval
-    |
-    v
+   |
+   v
 Pull Request
 ```
 
@@ -58,28 +118,36 @@ Pull Request
 
 | Component | What it does | Why it matters |
 | --- | --- | --- |
-| **API / CLI** | Receives the change request, repository target, and human approvals. | Gives people and other systems a controlled way to interact with the platform. |
-| **Orchestrator** | Tracks the workflow state and decides what step happens next. | Prevents the LLM from controlling the entire system on its own. |
-| **LLM Provider Layer** | Sends reasoning tasks to an AI model and returns validated structured responses. | Lets the system use AI for planning and code reasoning without locking the architecture to one vendor. |
-| **Repository Service** | Safely lists files, reads code, searches text, and builds repository context. | Gives the agent the information it needs while restricting what it can access. |
-| **Tool Layer** | Exposes explicit operations the agent may request. | Turns model intent into controlled, testable software actions. |
-| **Execution Sandbox** | Runs generated changes and commands in an isolated environment. | Protects the host system from unsafe or broken generated code. |
-| **Validation Pipeline** | Runs tests, linting, type checking, security scanning, and other quality gates. | Provides objective evidence instead of trusting the model when it says the code works. |
+| **Web Application** | Provides login, workspace switching, repository selection, change requests, approvals, results, and settings. | Makes the AI engineering engine usable as a real SaaS product. |
+| **Identity / Workspace Layer** | Represents users, personal workspaces, organizations, memberships, and roles. | Provides tenant isolation and simple multi-user collaboration. |
+| **API / CLI** | Receives change requests, repository targets, and approvals. | Gives the web app, developers, and automation a controlled interface to the engine. |
+| **Orchestrator** | Tracks workflow state and decides what step happens next. | Prevents the LLM from controlling the entire system on its own. |
+| **LLM Provider Layer** | Sends reasoning tasks to a configured AI model and returns validated structured responses. | Supports BYOK and avoids locking the architecture to one vendor. |
+| **Repository Service** | Safely lists files, reads code, searches text, and builds repository context. | Gives the agent needed information while restricting access. |
+| **Tool Layer** | Exposes explicit operations the agent may request. | Turns model intent into controlled, testable actions. |
+| **Execution Sandbox** | Runs generated changes and commands in an isolated environment. | Protects the platform from unsafe or broken generated code. |
+| **Validation Pipeline** | Runs tests, linting, type checking, security scanning, and other quality gates. | Provides objective evidence instead of trusting model confidence. |
 | **Policy / Approval Layer** | Enforces rules and human approval checkpoints. | Makes safety and release authority deterministic rather than model-controlled. |
-| **Evidence Bundle** | Records the plan, changed files, diff, commands, validation results, model metadata, and approvals. | Makes every AI-assisted change explainable and auditable. |
-| **Telemetry / Observability** | Measures traces, latency, token usage, failures, and estimated model cost. | Shows how the AI system behaves in production and helps improve reliability and cost. |
-| **GitHub Integration** | Creates branches and pull requests after approval. | Connects the AI workflow to a real software delivery process without allowing autonomous merging. |
+| **Evidence Bundle** | Records plan, changed files, diff, commands, validation results, model metadata, and approvals. | Makes every AI-assisted change explainable and auditable. |
+| **Telemetry / Observability** | Measures traces, latency, token usage, failures, and estimated model cost. | Shows how the AI system behaves and helps improve reliability and cost. |
+| **GitHub Integration** | Reads permitted repositories and creates branches/pull requests after approval. | Connects the AI workflow to real software delivery without autonomous merging. |
+| **Secrets Service** | Protects LLM and integration credentials. | Keeps customer credentials out of source code, logs, and model context. |
 
 ## Why AI is used here
 
 AI is used where reasoning is ambiguous: understanding a change request, deciding which code is relevant, proposing an implementation plan, and helping generate or review code.
 
-Deterministic software is used where correctness and control matter most: permissions, workflow state transitions, path validation, command execution, schema validation, test results, security gates, and approval rules.
+Deterministic software is used where correctness and control matter most: authentication, permissions, tenant isolation, workflow state transitions, path validation, command execution, schema validation, test results, security gates, and approval rules.
 
 That separation is a core architectural principle of this project.
 
 ## Core capabilities
 
+- SaaS web control plane
+- Personal and organization workspaces
+- Simple Admin / Developer role model
+- BYOK LLM provider configuration
+- GitHub repository connections
 - Repository-aware change planning
 - LLM tool calling and structured outputs
 - Safe, isolated code execution
@@ -106,6 +174,8 @@ That separation is a core architectural principle of this project.
 - **Security:** Bandit, dependency scanning, secret scanning
 - **Observability:** OpenTelemetry-compatible tracing and structured logs
 - **CI/CD:** GitHub Actions
+- **Web frontend:** framework to be selected when SaaS implementation begins
+- **SaaS persistence/auth/secrets:** to be selected based on Phase 4 requirements
 
 ## Development approach: build it and understand it
 
@@ -154,6 +224,16 @@ See [docs/LEARNING_GUIDE.md](docs/LEARNING_GUIDE.md) for the running engineering
 - **P3-T6 — Deployment and CI/CD**
 - **P3-T7 — Public Portfolio Release**
 
+### Phase 4 — SaaS Productization
+- **P4-T1 — Web Application and Authentication**
+- **P4-T2 — Personal and Organization Workspaces**
+- **P4-T3 — Admin / Developer Authorization**
+- **P4-T4 — BYOK LLM Provider Configuration**
+- **P4-T5 — GitHub Connection and Repository Management**
+- **P4-T6 — Run, Review, and Approval User Experience**
+- **P4-T7 — Multi-Tenant Security and Secrets Hardening**
+- **P4-T8 — SaaS Deployment and Portfolio Demonstration**
+
 See [docs/ROADMAP.md](docs/ROADMAP.md) for acceptance criteria.
 
 ## Engineering principles
@@ -166,10 +246,11 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for acceptance criteria.
 6. Evaluation is a product feature, not an afterthought.
 7. Prefer simple, testable components before adding orchestration complexity.
 8. Documentation must evolve with the implementation so the repository always explains the system that actually exists.
+9. SaaS tenant boundaries and permissions are deterministic application concerns, not decisions delegated to the LLM.
 
 ## How to explain this project in one minute
 
-> AI Release Engineer is an agentic software engineering system I architected to make AI-assisted code changes safer and more production-ready. The LLM handles reasoning tasks such as repository understanding and implementation planning, while deterministic services control file access, execution, validation, workflow state, and approvals. Generated changes run in an isolated environment, go through automated quality and security gates, and produce an auditable evidence bundle. A human must approve both the implementation plan and the release candidate before the system can create a pull request. The project demonstrates agent orchestration, structured tool use, secure execution, evaluation, observability, GitHub automation, and human-in-the-loop AI engineering.
+> AI Release Engineer is a SaaS-based agentic software engineering system I architected to make AI-assisted code changes safer and more production-ready. Users work in personal or organization workspaces, connect approved GitHub repositories, and can bring their own LLM provider credentials. The LLM handles reasoning tasks such as repository understanding and implementation planning, while deterministic services control authentication, permissions, file access, execution, validation, workflow state, and approvals. Generated changes run in an isolated environment, go through automated quality and security gates, and produce an auditable evidence bundle. A human must approve both the implementation plan and the release candidate before the system can create a pull request.
 
 ## Status
 
