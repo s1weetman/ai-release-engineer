@@ -74,6 +74,16 @@ Users will be able to:
 
 Other source-control systems can be added later behind the same repository integration boundary.
 
+## Delivery boundary
+
+AI Release Engineer goes beyond a traditional CI/CD pipeline. A conventional pipeline generally begins after source code already exists: it builds, tests, packages, and deploys that code. AI Release Engineer starts earlier in the software lifecycle by helping understand the requested change, planning it, creating the code change, and validating the result.
+
+The initial product boundary intentionally stops at an approved **pull request**. It does not directly deploy production code. Once a human reviews and merges the PR, the target repository's existing CI/CD or hosting platform can take over and deploy normally.
+
+This keeps the product focused on AI-assisted software change creation, validation, governance, and release preparation while allowing customers to keep their existing deployment systems.
+
+A future commercial SaaS edition may extend the product with optional deployment integrations, but autonomous production deployment is not part of the current core scope.
+
 ## Target workflow
 
 ```text
@@ -252,9 +262,24 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for acceptance criteria.
 
 > AI Release Engineer is a SaaS-based agentic software engineering system I architected to make AI-assisted code changes safer and more production-ready. Users work in personal or organization workspaces, connect approved GitHub repositories, and can bring their own LLM provider credentials. The LLM handles reasoning tasks such as repository understanding and implementation planning, while deterministic services control authentication, permissions, file access, execution, validation, workflow state, and approvals. Generated changes run in an isolated environment, go through automated quality and security gates, and produce an auditable evidence bundle. A human must approve both the implementation plan and the release candidate before the system can create a pull request.
 
+## P1-T1 foundation now being implemented
+
+The engineering foundation introduces:
+
+- `pyproject.toml` as the Python project manifest;
+- a production-style `src/ai_release_engineer/` package;
+- pytest for automated behavior tests;
+- Ruff for linting and formatting checks;
+- mypy for static type checking;
+- `.env.example` for safe configuration documentation;
+- `.gitignore` to prevent local secrets and generated files from entering source control;
+- a GitHub Actions quality workflow so the same checks run automatically on pull requests.
+
+These pieces deliberately come before the AI agent itself. They create a controlled software-engineering foundation so later model-generated behavior can be tested and governed.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T1 — Engineering Foundation
+**Current task:** P1-T1 — Engineering Foundation (implementation branch active; validation pending)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
