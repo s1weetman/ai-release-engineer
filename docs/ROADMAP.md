@@ -103,4 +103,88 @@ Prompt-injection suite, command/path allowlists, permission review, dependency/s
 Container image, deployment docs, CI gates, reproducible environment, health/readiness, rollback.
 
 ## P3-T7 — Public Portfolio Release
-Polished README, architecture diagram, public demo, walkthrough plan, evaluation table, cost/latency results, tradeoffs, resume-ready summary.
+Polished README, architecture diagram, public engine demo, walkthrough plan, evaluation table, cost/latency results, tradeoffs, resume-ready summary.
+
+# Phase 4 — SaaS Productization
+
+## P4-T1 — Web Application and Authentication
+- web application shell;
+- sign-up/sign-in/sign-out;
+- authenticated session handling;
+- protected routes;
+- initial dashboard;
+- API integration boundary established.
+
+## P4-T2 — Personal and Organization Workspaces
+- personal workspace automatically available to a user;
+- create organization;
+- organization membership model;
+- workspace switcher;
+- workspace-owned repositories/runs/configuration;
+- tenant-isolation tests.
+
+## P4-T3 — Admin / Developer Authorization
+- Admin and Developer roles;
+- server-side authorization policy;
+- Admin member management;
+- Admin integration/credential management;
+- Developer engineering workflow access;
+- unauthorized-action tests.
+
+## P4-T4 — BYOK LLM Provider Configuration
+- supported provider configuration UI;
+- encrypted secret storage;
+- masked secret display;
+- rotation/revocation flow;
+- organization credentials Admin-only;
+- provider connectivity validation;
+- no secret leakage in logs/traces/responses.
+
+## P4-T5 — GitHub Connection and Repository Management
+- GitHub App installation flow;
+- personal or organization workspace binding;
+- selected repository discovery;
+- connected repository list;
+- permission validation;
+- revoke/disconnect flow.
+
+## P4-T6 — Run, Review, and Approval User Experience
+- new change request screen;
+- repository selection;
+- run status/progress;
+- implementation plan review;
+- plan approve/reject;
+- validation and evidence view;
+- diff review;
+- release approve/reject;
+- run history.
+
+## P4-T7 — Multi-Tenant Security and Secrets Hardening
+- cross-tenant access test suite;
+- role escalation tests;
+- secure audit log;
+- rate/resource controls;
+- secrets threat model verification;
+- security review of browser/API boundaries;
+- backup/restore plan for SaaS data.
+
+## P4-T8 — SaaS Deployment and Portfolio Demonstration
+- deploy frontend and API;
+- deploy isolated worker path;
+- health/readiness monitoring;
+- production configuration documentation;
+- end-to-end personal workspace demo;
+- end-to-end organization demo;
+- public screenshots/walkthrough;
+- README and architecture finalized.
+
+## Deferred product options
+
+The following are intentionally deferred until product validation:
+
+- billing/subscriptions;
+- Reviewer/Approver/Tester roles;
+- GitLab/Bitbucket;
+- enterprise SSO;
+- self-hosted/private-network execution runner;
+- customer-managed encryption keys.
