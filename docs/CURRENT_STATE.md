@@ -19,9 +19,17 @@
 - BYOK LLM provider model accepted.
 - GitHub App selected as preferred repository connection model.
 - Phase 4 SaaS Productization added to roadmap.
+- P1-T1 implementation branch created.
+- Python project manifest added.
+- Base application package added.
+- Baseline health/version behavior added.
+- pytest baseline tests added.
+- Ruff and mypy configuration added.
+- .env.example and .gitignore added.
+- GitHub Actions quality workflow added.
 
 ## In progress
-P1-T1 — Engineering Foundation
+P1-T1 — Engineering Foundation validation.
 
 ## Product direction decisions
 
@@ -40,18 +48,23 @@ Workspace configuration will eventually include:
 - GitHub App installation/repository access;
 - workspace-owned runs, approvals, evidence, and audit history.
 
-The engine remains the immediate priority. SaaS UI implementation begins in Phase 4 after the core agentic workflow and production controls have been proven.
+The core product goes beyond CI/CD by participating in the software change lifecycle before a conventional pipeline starts: request understanding, planning, code modification, validation, review evidence, and PR preparation.
 
-## Next implementation actions
-1. Create pyproject.toml.
-2. Create src/ai_release_engineer package.
-3. Configure Ruff, mypy, and pytest.
-4. Add baseline health/version behavior.
-5. Add .env.example and .gitignore.
-6. Add GitHub Actions quality workflow.
-7. Run baseline tests/static checks.
+The initial release boundary stops at PR creation. Production deployment remains the responsibility of the target repository's existing CI/CD/hosting process after a human merges the PR.
+
+A future ClearPath Solutions commercial SaaS edition may add optional deployment integrations, but autonomous production deployment is not part of the current core scope.
+
+## P1-T1 validation remaining
+1. Open a pull request for the implementation branch.
+2. Run the GitHub Actions quality workflow.
+3. Confirm Ruff passes.
+4. Confirm formatting passes.
+5. Confirm mypy passes.
+6. Confirm pytest passes.
+7. Resolve any failures.
+8. Merge only after validation succeeds.
 
 ## Blockers
-None.
+None currently.
 
-Do not mark P1-T1 complete until its acceptance criteria in docs/ROADMAP.md are implemented and validated.
+Do not mark P1-T1 complete until its acceptance criteria in docs/ROADMAP.md are actually validated.
