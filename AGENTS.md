@@ -4,10 +4,10 @@
 Defines how AI coding agents work in this repository.
 
 ## Prime directive
-Build a production-quality agentic AI software engineering system. Optimize for correctness, auditability, security, testability, and clear human approval boundaries.
+Build a production-quality agentic AI software engineering system. Optimize for correctness, auditability, security, testability, clear human approval boundaries, and owner understanding.
 
 ## Required workflow
-1. Read docs/PROJECT.md, docs/CURRENT_STATE.md, docs/ARCHITECTURE.md, docs/SECURITY.md, and docs/DECISIONS.md.
+1. Read docs/PROJECT.md, docs/CURRENT_STATE.md, docs/ARCHITECTURE.md, docs/SECURITY.md, docs/DECISIONS.md, and docs/LEARNING_GUIDE.md.
 2. Identify the roadmap task ID.
 3. State intended change and acceptance criteria before editing.
 4. Make the smallest coherent implementation.
@@ -16,6 +16,23 @@ Build a production-quality agentic AI software engineering system. Optimize for 
 7. Report failures truthfully.
 8. Update docs/CURRENT_STATE.md when status changes.
 9. Update docs/DECISIONS.md when architecture changes.
+10. Update README.md whenever public behavior, architecture, setup, status, or major capabilities materially change.
+11. Update docs/LEARNING_GUIDE.md with a concise owner-facing explanation of each completed task.
+
+## Owner-understanding requirement
+
+Every meaningful implementation update must include a concise explanation covering:
+
+- **What was built**
+- **Why it exists**
+- **How it works**
+- **Where it fits in the system**
+- **How it is validated**
+- **What the owner should be able to say about it in an interview**
+
+Do not bury the explanation in framework jargon. Start with the engineering concept, then name the technology implementing it.
+
+The project owner is expected to review and understand the system. AI assistance accelerates implementation but does not replace architectural ownership.
 
 ## Safety rules
 - Never commit credentials or secrets.
@@ -38,4 +55,10 @@ Build a production-quality agentic AI software engineering system. Optimize for 
 - Tests cover success, expected failure, and unsafe input.
 
 ## Definition of done
-A task is complete only when its roadmap acceptance criteria are met, tests pass, relevant documentation is updated, and no known critical security issue remains.
+A task is complete only when:
+- its roadmap acceptance criteria are met;
+- applicable tests and quality gates pass;
+- relevant documentation is updated;
+- README.md remains accurate;
+- docs/LEARNING_GUIDE.md explains the completed work;
+- no known critical security issue remains.
