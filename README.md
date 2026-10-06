@@ -291,9 +291,22 @@ P1-T2 defines the data contracts that every later AI workflow step will use. Ins
 
 These contracts are implemented with Pydantic so malformed or unsafe data is rejected before it reaches later parts of the system. This is especially important for AI-generated output: the model may propose data, but the application decides whether that data is valid enough to use.
 
+## P1-T3 repository analysis now being implemented
+
+P1-T3 gives the engine safe, read-only visibility into a local repository. The new RepositoryService can:
+
+- list a repository tree deterministically;
+- read UTF-8 text files inside the repository boundary;
+- search text and return file/line matches;
+- report basic Git metadata such as current branch and commit SHA;
+- reject absolute paths and parent-directory escapes;
+- skip binary/non-UTF-8 files during text search.
+
+A dedicated fixture repository is included so repository analysis can be tested repeatedly without depending on a developer's real project.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T2 — Domain Models and Configuration (implementation branch active; validation pending)
+**Current task:** P1-T3 — Repository Analysis Tools (implementation branch active; validation pending)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
