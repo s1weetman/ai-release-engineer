@@ -4,67 +4,43 @@
 **Phase 1 — Working Local MVP**
 
 ## Current task
-**P1-T1 — Engineering Foundation**
+**P1-T2 — Domain Models and Configuration**
 
 ## Completed
-- Public repository created.
-- Professional repository description established.
-- AI Context Framework established.
-- Initial engine architecture defined.
-- Security invariants defined.
-- Engine roadmap defined.
-- SaaS product direction formally defined.
-- Personal and organization workspace model accepted.
-- Initial Admin / Developer role model accepted.
-- BYOK LLM provider model accepted.
-- GitHub App selected as preferred repository connection model.
-- Phase 4 SaaS Productization added to roadmap.
-- P1-T1 implementation branch created.
-- Python project manifest added.
-- Base application package added.
-- Baseline health/version behavior added.
-- pytest baseline tests added.
-- Ruff and mypy configuration added.
-- .env.example and .gitignore added.
-- GitHub Actions quality workflow added.
+- P1-T1 merged to main.
+- P1-T1 post-merge Quality workflow completed successfully.
+- Python 3.12+ project foundation established.
+- pytest, Ruff, formatting, mypy, and GitHub Actions quality gates established.
+- Public repository and AI Context Framework established.
+- Initial engine architecture and security invariants defined.
+- SaaS product direction and Phase 4 roadmap defined.
 
 ## In progress
-P1-T1 — Engineering Foundation validation.
+P1-T2 — Domain Models and Configuration.
 
-## Product direction decisions
+## P1-T2 implemented on feature branch
+- Pydantic and pydantic-settings added as runtime dependencies.
+- ChangeRequest schema added.
+- WorkflowState and WorkflowRun schemas added.
+- ImplementationPlan and PlanStep schemas added.
+- ToolResult and ValidationResult schemas added.
+- ApprovalRecord, ApprovalStage, and ApprovalDecision schemas added.
+- Validated Settings model added.
+- Environment configuration example aligned to Settings.
+- Unit tests added for valid data, invalid data, path traversal, approvals, workflow defaults, and runtime settings.
 
-The finished product is planned as a SaaS application with a web frontend.
+## Why this task matters
+P1-T2 creates the contracts between the user, the AI, the tool layer, the validation layer, and the approval workflow. Later components do not get to pass arbitrary unvalidated data to one another.
 
-Users may work in:
-- a personal workspace; or
-- one or more organization workspaces.
-
-Initial organization roles:
-- Admin;
-- Developer.
-
-Workspace configuration will eventually include:
-- supported LLM provider credentials (BYOK);
-- GitHub App installation/repository access;
-- workspace-owned runs, approvals, evidence, and audit history.
-
-The core product goes beyond CI/CD by participating in the software change lifecycle before a conventional pipeline starts: request understanding, planning, code modification, validation, review evidence, and PR preparation.
-
-The initial release boundary stops at PR creation. Production deployment remains the responsibility of the target repository's existing CI/CD/hosting process after a human merges the PR.
-
-A future ClearPath Solutions commercial SaaS edition may add optional deployment integrations, but autonomous production deployment is not part of the current core scope.
-
-## P1-T1 validation remaining
-1. Open a pull request for the implementation branch.
-2. Run the GitHub Actions quality workflow.
-3. Confirm Ruff passes.
-4. Confirm formatting passes.
-5. Confirm mypy passes.
-6. Confirm pytest passes.
-7. Resolve any failures.
-8. Merge only after validation succeeds.
+## Validation remaining
+1. Open the P1-T2 pull request.
+2. Let GitHub Actions run Ruff lint.
+3. Let GitHub Actions run Ruff format check.
+4. Let GitHub Actions run mypy.
+5. Let GitHub Actions run pytest.
+6. Correct any failures before merge.
 
 ## Blockers
 None currently.
 
-Do not mark P1-T1 complete until its acceptance criteria in docs/ROADMAP.md are actually validated.
+Do not mark P1-T2 complete until all roadmap acceptance criteria are validated.
