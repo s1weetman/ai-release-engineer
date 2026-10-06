@@ -57,8 +57,15 @@ Phases 1-3 validate the engine and production controls. Phase 4 adds the multi-t
 **Reason:** The web application should sit on top of a working, testable engine rather than hiding an immature backend behind a polished UI.
 
 
-## ADR-011 — Core product stops at pull-request preparation
+## ADR-012 — Core product stops at pull-request preparation
 **Status:** Accepted  
 The core AI Release Engineer workflow ends after an approved pull request is prepared. It does not directly deploy production code.
 
 **Reason:** The product's differentiating responsibility is the pre-merge lifecycle: understanding a requested change, planning it, creating code, validating it, gathering evidence, enforcing approvals, and preparing the PR. Existing CI/CD and hosting systems can continue handling deployment after a human merge. This keeps deployment authority outside the AI agent while allowing future optional deployment integrations.
+
+
+## ADR-013 — Pydantic schemas are the domain boundary
+**Status:** Accepted  
+Core workflow information is represented by validated Pydantic models rather than loosely structured dictionaries or unvalidated model output.
+
+**Reason:** The LLM is probabilistic, while the application needs deterministic contracts. Runtime schema validation provides a clear boundary for rejecting malformed, incomplete, unexpected, or unsafe data before downstream actions occur.

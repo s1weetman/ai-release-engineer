@@ -277,9 +277,23 @@ The engineering foundation introduces:
 
 These pieces deliberately come before the AI agent itself. They create a controlled software-engineering foundation so later model-generated behavior can be tested and governed.
 
+## P1-T2 domain contracts now being implemented
+
+P1-T2 defines the data contracts that every later AI workflow step will use. Instead of passing around loose dictionaries or free-form model output, the application now has typed schemas for:
+
+- change requests;
+- workflow runs and states;
+- implementation plans and ordered steps;
+- tool execution results;
+- validation results;
+- human approval records;
+- validated runtime configuration.
+
+These contracts are implemented with Pydantic so malformed or unsafe data is rejected before it reaches later parts of the system. This is especially important for AI-generated output: the model may propose data, but the application decides whether that data is valid enough to use.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T1 — Engineering Foundation (implementation branch active; validation pending)
+**Current task:** P1-T2 — Domain Models and Configuration (implementation branch active; validation pending)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
