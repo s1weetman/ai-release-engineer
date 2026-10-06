@@ -81,3 +81,52 @@ P1-T1 is complete only when the baseline test suite, Ruff, formatting, and mypy 
 
 ### Key design lesson
 The LLM is a component of the application. It is not the application architecture.
+
+
+---
+
+## P1-T2 — Domain Models and Configuration
+
+### What we built
+We added the typed data contracts that define what information is allowed to move through the system.
+
+### Why it exists
+AI systems often fail when free-form text is treated as if it were trustworthy application data. P1-T2 creates a strict boundary: the LLM can propose information, but the application validates it before using it.
+
+### Main contracts
+
+**ChangeRequest**  
+Represents what the user wants changed and which repository the request applies to.
+
+**WorkflowState / WorkflowRun**  
+Defines the legal lifecycle vocabulary for a run: received, analyzing, plan ready, approved, implementing, validating, review ready, release approved, PR prepared, failed, or cancelled.
+
+**ImplementationPlan / PlanStep**  
+Represents the AI's proposed implementation as structured data instead of a paragraph. Plan steps have deterministic ordering and bounded repository-relative paths.
+
+**ToolResult**  
+Represents what happened when a controlled tool runs: success/failure, exit code, output, errors, and duration.
+
+**ValidationResult**  
+Normalizes test, lint, type, and security gate results into passed, failed, or skipped outcomes.
+
+**ApprovalRecord**  
+Records a human plan or release decision, who made it, when it happened, and an optional comment.
+
+**Settings**  
+Loads environment-based runtime configuration through validation. Invalid timeouts, unsupported environment names, or other malformed configuration fail early instead of creating unpredictable runtime behavior.
+
+### Why Pydantic
+Pydantic turns Python type definitions into runtime validation. If an LLM returns malformed structured output, or an API caller sends data that violates our contract, validation fails before the rest of the system acts on it.
+
+### Security example
+A PlanStep rejects repository paths such as `../secrets.txt`. That does not replace the later filesystem sandbox, but it creates an early defense-in-depth boundary.
+
+### How we validate it
+Unit tests cover valid models and intentional failures. GitHub Actions must then run Ruff, formatting, mypy, and pytest successfully.
+
+### Interview explanation
+> Before connecting an LLM, I defined strict Pydantic domain contracts for requests, workflow state, implementation plans, tool results, validation evidence, approvals, and runtime configuration. The model is not allowed to drive the application with arbitrary free-form data. Its outputs must cross validated schemas before deterministic code can act on them. That gives us a clean boundary between probabilistic AI reasoning and controlled application behavior.
+
+### Key design lesson
+Structured output is not trustworthy merely because it is JSON. It becomes usable only after the application validates it against rules it owns.
