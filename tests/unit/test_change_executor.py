@@ -54,9 +54,8 @@ def test_executor_updates_disposable_copy_without_touching_source() -> None:
             )
         )
 
-        workspace_content = (executor.workspace_root / "src" / "app.py").read_text(
-            encoding="utf-8"
-        )
+        app_path = executor.workspace_root / "src" / "app.py"
+        workspace_content = app_path.read_text(encoding="utf-8")
         assert 'return f"Hi, {name}!"' in workspace_content
 
     assert (FIXTURE_ROOT / "src" / "app.py").read_text(encoding="utf-8") == source_content
