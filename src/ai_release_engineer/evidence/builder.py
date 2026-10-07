@@ -41,10 +41,13 @@ class EvidenceBuilder:
             changes=changes,
         )
         model_call = (
-            self._model_call_evidence(provider_metadata)
-            if provider_metadata is not None
-            else None
+            self._model_call_evidence(provider_metadata) if provider_metadata is not None else None
         )
+        validation_passed = bool(validations) and all(
+            result.status.value == "passed" for result in validations
+        )
+        from ai_release_engineer.models.evidence import EvidenceStatus
+
         return EvidenceBundle(
             run_id=run_id,
             request=request,
@@ -54,6 +57,8 @@ class EvidenceBuilder:
             tool_results=tuple(tool_results),
             validations=tuple(validations),
             approvals=tuple(approvals),
+            validation_passed=validation_passed,
+            status=EvidenceStatus.PASSED if validation_passed else EvidenceStatus.FAILED,
         )
 
     @staticmethod
