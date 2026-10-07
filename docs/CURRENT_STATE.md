@@ -34,15 +34,18 @@ The P1-T7 demo intentionally uses deterministic planning and predefined scenario
 
 The live OpenAI planning adapter already exists from P1-T4. Model-driven patch generation and real GitHub branch/patch automation are expanded in Phase 2.
 
-## Validation remaining
-1. Open the P1-T7 pull request.
-2. Run Ruff lint and formatting.
-3. Run mypy.
-4. Run pytest.
-5. Correct every failure until the complete Quality workflow is green.
-6. Merge only after validation succeeds.
+## Validation status
+- PR #7 is open.
+- Ruff lint passed.
+- Ruff formatting passed.
+- mypy passed.
+- pytest passed (64 tests).
+- The complete pull-request Quality workflow is green.
+
+## Remaining step
+Merge PR #7 into main, then confirm the post-merge main Quality workflow remains green.
 
 ## Blockers
 None currently.
 
-P1-T7 is the final Phase 1 task. When merged and post-merge validation is green, Phase 1 is complete.
+P1-T7 is the final Phase 1 task. Implementation and pull-request validation are complete; merge/post-merge verification remain.
