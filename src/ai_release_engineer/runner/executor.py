@@ -1,8 +1,8 @@
 """High-level isolated change executor."""
 
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 from types import TracebackType
-from typing import Iterable, Sequence
 
 from ai_release_engineer.models.changes import FileChange
 from ai_release_engineer.models.results import ToolResult
