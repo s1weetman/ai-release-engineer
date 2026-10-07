@@ -257,6 +257,51 @@ The EvidenceBundle is designed to become the stable handoff to later approval, p
 
 Validation status is derived by deterministic code. The LLM does not set the overall success state.
 
+## Phase 1 integrated MVP demo
+
+P1-T7 connects the Phase 1 boundaries into a complete local demonstration:
+
+```text
+Demo ChangeRequest
+        |
+        v
+RepositoryService
+        |
+        v
+PlanningAgent
+        |
+        v
+Deterministic PlanningProvider
+        |
+        v
+ImplementationPlan
+        |
+        v
+Plan ApprovalRecord
+        |
+        v
+IsolatedChangeExecutor
+        |
+        +--> explicit bounded FileChange objects
+        |
+        v
+ValidationPipeline
+  pytest / Ruff / mypy
+        |
+        v
+ValidationGate
+        |
+        v
+EvidenceBuilder
+        |
+        v
+EvidenceBundle JSON
+```
+
+The deterministic demo provider is a reproducibility choice, not the production provider architecture. The OpenAI adapter remains available behind the same PlanningProvider interface.
+
+The Phase 1 demo uses scenario-specific FileChange objects. Model-driven patch generation is deliberately not overstated as complete; that capability is expanded with the GitHub branch/patch workflow in Phase 2.
+
 ## Deployment model
 
 Initial target: cloud-hosted SaaS control plane plus isolated execution workers.
