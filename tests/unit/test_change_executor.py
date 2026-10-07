@@ -10,6 +10,7 @@ from ai_release_engineer.models.results import ToolResult
 from ai_release_engineer.runner import (
     FileChangeConflictError,
     IsolatedChangeExecutor,
+    UnsafeWorkspacePathError,
     WorkspaceNotReadyError,
 )
 
@@ -153,3 +154,26 @@ def test_executor_passes_active_workspace_to_runner() -> None:
         assert result.success is True
         assert runner.workspace == active_root
         assert runner.argv == ("python", "-m", "pytest")
+
+
+def test_executor_rejects_write_through_symlink_outside_workspace(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    outside = tmp_path / "outside.txt"
+    outside.write_text("secret", encoding="utf-8")
+    (source / "link.txt").symlink_to(outside)
+
+    runner = FakeRunner()
+    with IsolatedChangeExecutor(source_root=source, runner=runner) as executor:
+        with pytest.raises(UnsafeWorkspacePathError, match="escapes disposable workspace"):
+            executor.apply_changes(
+                (
+                    FileChange(
+                        operation=ChangeOperation.UPDATE,
+                        path="link.txt",
+                        content="changed",
+                    ),
+                )
+            )
+
+    assert outside.read_text(encoding="utf-8") == "secret"
