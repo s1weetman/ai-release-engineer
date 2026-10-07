@@ -54,7 +54,9 @@ def test_executor_updates_disposable_copy_without_touching_source() -> None:
             )
         )
 
-        workspace_content = (executor.workspace_root / "src" / "app.py").read_text(encoding="utf-8")
+        workspace_content = (executor.workspace_root / "src" / "app.py").read_text(
+            encoding="utf-8"
+        )
         assert 'return f"Hi, {name}!"' in workspace_content
 
     assert (FIXTURE_ROOT / "src" / "app.py").read_text(encoding="utf-8") == source_content
@@ -112,14 +114,14 @@ def test_executor_rejects_create_under_missing_directory() -> None:
         pytest.raises(FileChangeConflictError, match="parent directory"),
     ):
         executor.apply_changes(
-                (
-                    FileChange(
-                        operation=ChangeOperation.CREATE,
-                        path="missing/new.py",
-                        content="VALUE = 1\n",
-                    ),
-                )
+            (
+                FileChange(
+                    operation=ChangeOperation.CREATE,
+                    path="missing/new.py",
+                    content="VALUE = 1\n",
+                ),
             )
+        )
 
 
 @pytest.mark.parametrize("path", ("../outside.py", "/absolute.py", "src/../../outside.py"))
@@ -170,13 +172,13 @@ def test_executor_rejects_write_through_symlink_outside_workspace(tmp_path: Path
         pytest.raises(UnsafeWorkspacePathError, match="escapes disposable workspace"),
     ):
         executor.apply_changes(
-                (
-                    FileChange(
-                        operation=ChangeOperation.UPDATE,
-                        path="link.txt",
-                        content="changed",
-                    ),
-                )
+            (
+                FileChange(
+                    operation=ChangeOperation.UPDATE,
+                    path="link.txt",
+                    content="changed",
+                ),
             )
+        )
 
     assert outside.read_text(encoding="utf-8") == "secret"
