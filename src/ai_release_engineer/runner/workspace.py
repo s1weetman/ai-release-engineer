@@ -50,7 +50,7 @@ class DisposableWorkspace:
             self._source_root,
             root,
             ignore=shutil.ignore_patterns(*self._IGNORED_NAMES),
-            symlinks=False,
+            symlinks=True,
         )
         self._root = root.resolve()
         return self
