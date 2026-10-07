@@ -15,9 +15,7 @@ class ValidationGate:
     @staticmethod
     def passed(results: Sequence[ValidationResult]) -> bool:
         """Return true only when at least one result exists and all passed."""
-        return bool(results) and all(
-            result.status is ValidationStatus.PASSED for result in results
-        )
+        return bool(results) and all(result.status is ValidationStatus.PASSED for result in results)
 
     @classmethod
     def require_passed(cls, results: Sequence[ValidationResult]) -> None:
