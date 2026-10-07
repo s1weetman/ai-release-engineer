@@ -64,13 +64,20 @@
 
 ## Phase 1 runner rules
 
-- disposable workspace;
-- fixture repositories first;
-- no inherited host secrets;
-- command timeout;
-- output limits;
-- exit code/stdout/stderr/duration capture;
-- allowlisted supported commands.
+- source repositories are copied to disposable workspaces before mutation;
+- fixture repositories are used first in automated tests;
+- create/update paths are validated against workspace boundaries;
+- symlinks cannot be used to write outside the workspace;
+- deletion is not supported in the Phase 1 executor;
+- commands are argument arrays, not unrestricted shell strings;
+- supported validation commands are explicitly allowlisted;
+- Docker command execution uses no network;
+- Docker drops Linux capabilities and enables no-new-privileges;
+- Docker root filesystem is read-only, with only bounded temporary storage plus the workspace writable;
+- host secrets are not intentionally injected into the command container;
+- CPU, memory, PID, command timeout, and output limits are applied;
+- exit code/stdout/stderr/duration are captured;
+- timed-out named containers receive best-effort forced cleanup.
 
 ## Future private-environment runner
 
