@@ -53,8 +53,7 @@ def test_success_scenario_runs_complete_mvp_flow() -> None:
     assert result.evidence.model_call.provider == "demo"
     assert result.evidence.approvals[0].actor == "demo-user"
     assert all(
-        validation.status is ValidationStatus.PASSED
-        for validation in result.evidence.validations
+        validation.status is ValidationStatus.PASSED for validation in result.evidence.validations
     )
     assert len(runner.commands) == 3
     assert (DEMO_ROOT / "greeting.py").read_text(encoding="utf-8") == original
