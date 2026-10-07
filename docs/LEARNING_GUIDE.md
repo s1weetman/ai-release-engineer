@@ -130,3 +130,56 @@ Unit tests cover valid models and intentional failures. GitHub Actions must then
 
 ### Key design lesson
 Structured output is not trustworthy merely because it is JSON. It becomes usable only after the application validates it against rules it owns.
+
+
+---
+
+## P1-T3 — Repository Analysis Tools
+
+### What we built
+We added a read-only RepositoryService that can inspect a local source repository without allowing arbitrary filesystem access.
+
+### Why it exists
+Before the AI can create a useful implementation plan, it needs evidence about the codebase: what files exist, what those files contain, where relevant text appears, and which Git revision is being inspected.
+
+The important part is that the AI does not receive unrestricted file-system access. It gets a controlled service with specific read-only capabilities.
+
+### Main capabilities
+
+**Repository tree listing**  
+Returns a deterministic inventory of files and directories while excluding the internal `.git` directory.
+
+**Safe file reading**  
+Reads UTF-8 text files only after resolving the requested path against the configured repository root.
+
+**Text search**  
+Searches repository text files for a literal string and returns the file path, line number, and matching line.
+
+**Repository metadata**  
+Reads basic Git information such as current branch and commit SHA without modifying the repository.
+
+**Boundary enforcement**  
+Paths such as `../outside.txt` or `/etc/passwd` are rejected before reading.
+
+**Fixture repository**  
+Tests run against a tiny repository stored under `tests/fixtures`, so results are repeatable and do not depend on a developer machine.
+
+### How path protection works
+The service resolves both the repository root and the requested file to canonical filesystem paths. It then verifies that the requested path is still underneath the repository root. If not, it raises `UnsafeRepositoryPathError`.
+
+This is a practical example of least privilege: the future planning agent gets only the repository visibility it needs, not general access to the machine.
+
+### Why read-only first
+P1-T3 intentionally contains no write, delete, commit, or shell-execution capability. Reading and changing code are separated into different trust boundaries. Write/execution capabilities arrive later inside isolated workflows.
+
+### Quality issue we found
+After P1-T2 was merged, the main quality workflow found one Ruff modernization rule involving `timezone.utc`. The code was functionally fine, but our automated quality gate correctly rejected it. P1-T3 carries the correction forward so the entire suite can be green again.
+
+### How we validate it
+Tests cover normal tree listing, file reading, search results, non-Git metadata behavior, missing roots, and malicious path escape attempts.
+
+### Interview explanation
+> I separated repository understanding from code modification. The planning side gets a read-only RepositoryService that exposes explicit operations for tree listing, bounded file reads, text search, and Git metadata. Every requested path is canonicalized and checked to ensure it remains under the repository root. That gives the LLM enough context to reason about code without giving it general filesystem authority.
+
+### Key design lesson
+Giving an AI "access to the repo" should not mean giving it unrestricted access to the host filesystem.

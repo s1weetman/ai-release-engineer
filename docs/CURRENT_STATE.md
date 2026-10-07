@@ -4,43 +4,37 @@
 **Phase 1 — Working Local MVP**
 
 ## Current task
-**P1-T2 — Domain Models and Configuration**
+**P1-T3 — Repository Analysis Tools**
 
 ## Completed
-- P1-T1 merged to main.
-- P1-T1 post-merge Quality workflow completed successfully.
-- Python 3.12+ project foundation established.
-- pytest, Ruff, formatting, mypy, and GitHub Actions quality gates established.
-- Public repository and AI Context Framework established.
-- Initial engine architecture and security invariants defined.
-- SaaS product direction and Phase 4 roadmap defined.
+- P1-T1 merged to main and validated successfully.
+- P1-T2 merged to main.
+- P1-T2 domain contracts and validated configuration are present on main.
+- P1-T3 feature branch created.
+- Read-only RepositoryService implemented.
+- Deterministic repository tree listing implemented.
+- Safe UTF-8 file reading implemented.
+- Literal text search with file/line matches implemented.
+- Basic Git metadata lookup implemented.
+- Repository-root boundary enforcement implemented.
+- Path traversal tests added.
+- Repeatable fixture repository added.
 
-## In progress
-P1-T2 — Domain Models and Configuration.
+## Quality note carried forward from P1-T2
+The post-merge main Quality workflow for P1-T2 failed at Ruff because Python 3.12's `datetime.UTC` alias was preferred over `timezone.utc`. The failure was isolated to that lint rule. The correction is included in the P1-T3 branch and will be revalidated with the full quality suite before P1-T3 is merged.
 
-## P1-T2 implemented on feature branch
-- Pydantic and pydantic-settings added as runtime dependencies.
-- ChangeRequest schema added.
-- WorkflowState and WorkflowRun schemas added.
-- ImplementationPlan and PlanStep schemas added.
-- ToolResult and ValidationResult schemas added.
-- ApprovalRecord, ApprovalStage, and ApprovalDecision schemas added.
-- Validated Settings model added.
-- Environment configuration example aligned to Settings.
-- Unit tests added for valid data, invalid data, path traversal, approvals, workflow defaults, and runtime settings.
-
-## Why this task matters
-P1-T2 creates the contracts between the user, the AI, the tool layer, the validation layer, and the approval workflow. Later components do not get to pass arbitrary unvalidated data to one another.
+## Why P1-T3 matters
+The planning agent cannot reason about a codebase unless the application can inspect that codebase safely. P1-T3 gives the future agent controlled read-only repository tools without giving it arbitrary filesystem access.
 
 ## Validation remaining
-1. Open the P1-T2 pull request.
-2. Let GitHub Actions run Ruff lint.
-3. Let GitHub Actions run Ruff format check.
-4. Let GitHub Actions run mypy.
-5. Let GitHub Actions run pytest.
-6. Correct any failures before merge.
+1. Open the P1-T3 pull request.
+2. Run Ruff lint and formatting.
+3. Run mypy.
+4. Run pytest, including malicious path tests.
+5. Resolve any failures.
+6. Merge only after the quality workflow succeeds.
 
 ## Blockers
 None currently.
 
-Do not mark P1-T2 complete until all roadmap acceptance criteria are validated.
+Do not mark P1-T3 complete until all roadmap acceptance criteria and the carried-forward quality fix are validated.

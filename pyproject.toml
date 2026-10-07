@@ -38,6 +38,10 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["I001"] # Import ordering is cosmetic; formatting and substantive lint rules remain enforced.
+
+[tool.ruff.lint.isort]
+known-first-party = ["ai_release_engineer"]
 
 [tool.mypy]
 python_version = "3.12"

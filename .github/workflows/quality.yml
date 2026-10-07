@@ -33,10 +33,13 @@ jobs:
         run: python -m ruff check .
 
       - name: Ruff formatting check
+        if: always()
         run: python -m ruff format --check .
 
       - name: Mypy type check
+        if: always()
         run: python -m mypy src tests
 
       - name: Pytest
+        if: always()
         run: python -m pytest
