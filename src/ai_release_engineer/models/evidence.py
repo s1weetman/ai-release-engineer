@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ai_release_engineer.models.approval import ApprovalRecord
 from ai_release_engineer.models.change_request import ChangeRequest
@@ -74,15 +74,17 @@ class EvidenceBundle(BaseModel):
     tool_results: tuple[ToolResult, ...] = ()
     validations: tuple[ValidationResult, ...] = Field(min_length=1)
     approvals: tuple[ApprovalRecord, ...] = ()
+    validation_passed: bool
+    status: EvidenceStatus
 
-    @computed_field
-    @property
-    def validation_passed(self) -> bool:
-        """Return true only when every recorded validation passed."""
-        return all(result.status is ValidationStatus.PASSED for result in self.validations)
+    @model_validator(mode="after")
+    def status_must_match_validation_evidence(self) -> "EvidenceBundle":
+        """Reject any bundle whose claimed status disagrees with validation evidence."""
+        expected_passed = all(
+            result.status is ValidationStatus.PASSED for result in self.validations
+        )
+        expected_status = EvidenceStatus.PASSED if expected_passed else EvidenceStatus.FAILED
 
-    @computed_field
-    @property
-    def status(self) -> EvidenceStatus:
-        """Derive overall evidence status from deterministic validation results."""
-        return EvidenceStatus.PASSED if self.validation_passed else EvidenceStatus.FAILED
+        if self.validation_passed is not expected_passed or self.status is not expected_status:
+            raise ValueError("evidence status must be derived from validation results")
+        return self
