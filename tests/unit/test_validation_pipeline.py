@@ -4,7 +4,12 @@ from collections.abc import Sequence
 
 import pytest
 
-from ai_release_engineer.models import ToolResult, ValidationKind, ValidationStatus
+from ai_release_engineer.models import (
+    ToolResult,
+    ValidationKind,
+    ValidationResult,
+    ValidationStatus,
+)
 from ai_release_engineer.validation import (
     ValidationGate,
     ValidationGateError,
@@ -112,22 +117,18 @@ def test_failed_validation_blocks_success() -> None:
 
 
 def test_skipped_or_missing_validation_does_not_pass_gate() -> None:
-    skipped = (
-        run := ValidationPipeline().run(
-            executor=FakeValidationExecutor((make_tool(name="pytest", success=True),)),
-            specs=(
-                ValidationSpec(
-                    kind=ValidationKind.TEST,
-                    name="unit-tests",
-                    command=("pytest",),
-                ),
+    passed_run = ValidationPipeline().run(
+        executor=FakeValidationExecutor((make_tool(name="pytest", success=True),)),
+        specs=(
+            ValidationSpec(
+                kind=ValidationKind.TEST,
+                name="unit-tests",
+                command=("pytest",),
             ),
-        )
-    ).validations
-    assert run.validations[0].status is ValidationStatus.PASSED
-    assert ValidationGate.passed(skipped) is True
-
-    from ai_release_engineer.models import ValidationResult
+        ),
+    )
+    assert passed_run.validations[0].status is ValidationStatus.PASSED
+    assert ValidationGate.passed(passed_run.validations) is True
 
     skipped_result = ValidationResult(
         kind=ValidationKind.SECURITY,
