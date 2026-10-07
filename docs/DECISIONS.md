@@ -134,3 +134,22 @@ The application does not accept a caller-supplied success flag for the validatio
 Change-run evidence is represented as a versioned Pydantic EvidenceBundle containing request, plan, model metadata, diff/change summary, raw tool results, normalized validations, and approvals.
 
 **Reason:** Evidence will later cross API, persistence, audit, and UI boundaries. A versioned schema makes those records machine-readable, reviewable, and evolvable.
+
+
+---
+
+## ADR-022 — Phase 1 demo is deterministic by default
+**Status:** Accepted  
+The P1-T7 public local demo uses a deterministic PlanningProvider and predefined bounded FileChange objects.
+
+**Reason:** The Phase 1 milestone is intended to prove workflow integration, isolation, validation, evidence, and failure handling reproducibly. Requiring a live API key would add nondeterminism, cost, rate limits, and provider availability as unrelated demo failure modes.
+
+The live OpenAI planning adapter remains part of the engine. Later phases connect the workflow to model-driven patch generation and real GitHub delivery.
+
+---
+
+## ADR-023 — Phase 1 demo includes an intentional failure path
+**Status:** Accepted  
+The demo includes both a passing scenario and a scenario whose implementation deliberately fails a regression test.
+
+**Reason:** A governed AI engineering system must prove that incorrect changes are blocked, not only that a curated successful example can pass.

@@ -357,9 +357,90 @@ The validation/evidence layer now:
 
 The Phase 1 security result is a typed evidence category. Full production security scanning policy and scanner integration are expanded later in the roadmap.
 
+## Phase 1 MVP demo
+
+P1-T7 connects the Phase 1 components into one reproducible local workflow against a tiny greeting-service repository.
+
+The demo proves this sequence:
+
+```text
+bounded change request
+      |
+      v
+safe repository analysis
+      |
+      v
+structured implementation plan
+      |
+      v
+recorded plan approval
+      |
+      v
+disposable repository copy
+      |
+      v
+bounded file implementation
+      |
+      +--> pytest
+      +--> Ruff
+      +--> mypy
+      |
+      v
+deterministic validation gate
+      |
+      v
+versioned EvidenceBundle JSON
+```
+
+### Important Phase 1 scope note
+
+The demo intentionally uses a **deterministic planning provider and scenario-specific FileChange objects** so the workflow is reproducible without an API key, token cost, or nondeterministic model output.
+
+The real OpenAI planning adapter built in P1-T4 remains part of the engine. Phase 1 demonstrates the governed workflow around planning and code changes; later phases connect that workflow to live GitHub branches, model-driven patch creation, stronger security gates, and pull-request automation.
+
+### Run the demo
+
+Prerequisites:
+
+- Python 3.12+
+- Docker
+- `make`
+
+Install the local project once:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Run the successful scenario:
+
+```bash
+make demo-success
+```
+
+This builds the local validation image, applies the requested feature only inside a disposable repository copy, runs pytest/Ruff/mypy with Docker networking disabled, and writes the evidence bundle to:
+
+```text
+.demo-output/mvp-success.json
+```
+
+Run the intentionally failing scenario:
+
+```bash
+make demo-failure
+```
+
+The failing scenario deliberately introduces incorrect excited-greeting behavior. Pytest fails, the ValidationGate blocks success, and the evidence bundle is written to:
+
+```text
+.demo-output/mvp-validation-failure.json
+```
+
+The failure command exits with status code `2` intentionally because the validation gate correctly blocked the change.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T6 — Validation and Evidence Bundle (PR #6 open; quality validation passed; awaiting merge)
+**Current task:** P1-T7 — MVP Demo Scenario (PR #7 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
