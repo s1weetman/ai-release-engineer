@@ -338,9 +338,28 @@ The executor now:
 
 The Docker runner is intentionally separate from the high-level executor so the execution backend can be tested and evolved independently. The default base image is only a runner mechanism; project-specific dependency images will be addressed as the validation/demo workflow matures.
 
+## P1-T6 validation and evidence bundle
+
+P1-T6 turns raw command output and file changes into an auditable review package.
+
+The validation/evidence layer now:
+
+- classifies validation results as test, lint, type, or security;
+- preserves the raw ToolResult alongside normalized ValidationResult records;
+- runs multiple validation specifications and records all outcomes;
+- uses a deterministic ValidationGate that passes only when every required result passed;
+- treats failed, skipped, or missing validation evidence as not ready to continue;
+- creates per-file change summaries with create/update operation, additions, and deletions;
+- creates a bounded unified diff for human review;
+- captures request, implementation plan, model-call metadata, tool results, validation results, approvals, and change summary in one versioned EvidenceBundle;
+- derives overall evidence status from validation results instead of accepting a caller-supplied success flag;
+- serializes the bundle to JSON for future storage, APIs, audit history, and the SaaS review screen.
+
+The Phase 1 security result is a typed evidence category. Full production security scanning policy and scanner integration are expanded later in the roadmap.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T5 — Isolated Change Executor (PR #5 open; quality validation passed; awaiting merge)
+**Current task:** P1-T6 — Validation and Evidence Bundle (PR #6 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.

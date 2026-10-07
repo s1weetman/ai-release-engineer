@@ -5,6 +5,15 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class ValidationKind(StrEnum):
+    """Supported validation categories for the local MVP."""
+
+    TEST = "test"
+    LINT = "lint"
+    TYPE = "type"
+    SECURITY = "security"
+
+
 class ValidationStatus(StrEnum):
     """Normalized result status for deterministic quality gates."""
 
@@ -31,7 +40,9 @@ class ValidationResult(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
+    kind: ValidationKind
     name: str = Field(min_length=1, max_length=200)
     status: ValidationStatus
+    command: tuple[str, ...] = ()
     details: str = ""
     duration_ms: int = Field(ge=0)

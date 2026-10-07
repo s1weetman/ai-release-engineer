@@ -214,6 +214,49 @@ ToolResult
 
 The original source repository is not modified by this path. Docker is used for command execution because repository code is treated as untrusted. The runner backend remains an interface so a future managed or self-hosted worker can replace the local Docker implementation without changing higher-level orchestration.
 
+## Phase 1 validation and evidence boundary
+
+P1-T6 converts executor output into deterministic review evidence:
+
+```text
+Disposable workspace
+      |
+      +--> FileChange records
+      |        |
+      |        v
+      |   ChangeSummaryBuilder
+      |   (counts + bounded diff)
+      |
+      +--> validation commands
+               |
+               v
+          ToolResult
+               |
+               v
+       ValidationPipeline
+               |
+               v
+        ValidationResult
+      test / lint / type / security
+               |
+               v
+        ValidationGate
+               |
+        +------+------+
+        |             |
+      PASS           BLOCK
+        |
+        v
+     EvidenceBuilder
+        |
+        v
+   EvidenceBundle JSON
+```
+
+The EvidenceBundle is designed to become the stable handoff to later approval, persistence, audit, API, and SaaS review layers.
+
+Validation status is derived by deterministic code. The LLM does not set the overall success state.
+
 ## Deployment model
 
 Initial target: cloud-hosted SaaS control plane plus isolated execution workers.
