@@ -1,7 +1,8 @@
 """Runner interfaces for isolated command execution."""
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Protocol, Sequence
+from typing import Protocol
 
 from ai_release_engineer.models.results import ToolResult
 
