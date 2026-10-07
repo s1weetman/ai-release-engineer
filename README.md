@@ -320,9 +320,27 @@ The planning agent now:
 
 The local MVP uses an environment-provided OpenAI API key when a live provider call is made. Unit tests use mock providers and never require a real secret.
 
+## P1-T5 isolated change executor
+
+P1-T5 introduces the first controlled write-and-execute boundary.
+
+The executor now:
+
+- copies the source repository into a disposable temporary workspace;
+- supports validated create/update file changes only inside that workspace;
+- rejects absolute paths, parent traversal, conflicting create/update operations, and symlink escapes;
+- keeps the original repository unchanged;
+- validates commands against a small allowlist instead of invoking an unrestricted shell;
+- runs allowed commands through Docker with networking disabled, Linux capabilities dropped, no-new-privileges enabled, a read-only container filesystem, resource limits, and only the disposable workspace mounted writable;
+- enforces command timeouts and bounded stdout/stderr;
+- captures exit code, stdout, stderr, duration, and success as ToolResult evidence;
+- force-removes timed-out containers on a best-effort basis.
+
+The Docker runner is intentionally separate from the high-level executor so the execution backend can be tested and evolved independently. The default base image is only a runner mechanism; project-specific dependency images will be addressed as the validation/demo workflow matures.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T4 — Planning Agent (implementation branch active; validation pending)
+**Current task:** P1-T5 — Isolated Change Executor (PR #5 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.

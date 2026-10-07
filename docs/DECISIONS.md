@@ -92,3 +92,28 @@ The first live planning adapter uses OpenAI's Responses API structured-output pa
 P1-T4 can inspect repository context and propose an implementation plan but has no file-write, command-execution, commit, or merge authority.
 
 **Reason:** Separating reasoning from side effects creates a clear human-review boundary and keeps the first LLM capability low-risk.
+
+
+---
+
+## ADR-017 — File changes use disposable workspaces
+**Status:** Accepted  
+Phase 1 file changes are applied to a temporary copy of the source repository rather than directly to the source checkout.
+
+**Reason:** A disposable copy creates a simple failure/rollback boundary and prevents experimental generated changes from corrupting the source repository.
+
+---
+
+## ADR-018 — Command execution is allowlisted and shell-free
+**Status:** Accepted  
+Commands are supplied as argument arrays, validated against a small tool allowlist, and never executed through an unrestricted shell string.
+
+**Reason:** Model-generated shell text is too powerful a control surface. A deterministic allowlist reduces command-injection and destructive-command risk.
+
+---
+
+## ADR-019 — Docker is the Phase 1 command isolation boundary
+**Status:** Accepted  
+Supported commands execute in a Docker container with network disabled, Linux capabilities dropped, no-new-privileges enabled, a read-only root filesystem, resource/time limits, and the disposable repository mounted as the intended writable workspace.
+
+**Reason:** Validation commands execute repository code and therefore require stronger isolation than a changed working directory alone.
