@@ -1,7 +1,7 @@
 """Tests for disposable workspaces and bounded file changes."""
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import pytest
 from pydantic import ValidationError
@@ -54,9 +54,7 @@ def test_executor_updates_disposable_copy_without_touching_source() -> None:
             )
         )
 
-        workspace_content = (executor.workspace_root / "src" / "app.py").read_text(
-            encoding="utf-8"
-        )
+        workspace_content = (executor.workspace_root / "src" / "app.py").read_text(encoding="utf-8")
         assert 'return f"Hi, {name}!"' in workspace_content
 
     assert (FIXTURE_ROOT / "src" / "app.py").read_text(encoding="utf-8") == source_content
@@ -109,9 +107,11 @@ def test_executor_rejects_conflicting_file_operations() -> None:
 def test_executor_rejects_create_under_missing_directory() -> None:
     runner = FakeRunner()
 
-    with IsolatedChangeExecutor(source_root=FIXTURE_ROOT, runner=runner) as executor:
-        with pytest.raises(FileChangeConflictError, match="parent directory"):
-            executor.apply_changes(
+    with (
+        IsolatedChangeExecutor(source_root=FIXTURE_ROOT, runner=runner) as executor,
+        pytest.raises(FileChangeConflictError, match="parent directory"),
+    ):
+        executor.apply_changes(
                 (
                     FileChange(
                         operation=ChangeOperation.CREATE,
@@ -165,9 +165,11 @@ def test_executor_rejects_write_through_symlink_outside_workspace(tmp_path: Path
     (source / "link.txt").symlink_to(outside)
 
     runner = FakeRunner()
-    with IsolatedChangeExecutor(source_root=source, runner=runner) as executor:
-        with pytest.raises(UnsafeWorkspacePathError, match="escapes disposable workspace"):
-            executor.apply_changes(
+    with (
+        IsolatedChangeExecutor(source_root=source, runner=runner) as executor,
+        pytest.raises(UnsafeWorkspacePathError, match="escapes disposable workspace"),
+    ):
+        executor.apply_changes(
                 (
                     FileChange(
                         operation=ChangeOperation.UPDATE,
