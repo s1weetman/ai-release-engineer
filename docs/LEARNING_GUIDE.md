@@ -246,3 +246,96 @@ CI uses fake providers rather than a real API key. Tests verify repository conte
 
 ### Key design lesson
 The first useful capability of an engineering agent does not need write access. Planning can be valuable, testable, and human-reviewable while remaining read-only.
+
+
+---
+
+## P1-T5 — Isolated Change Executor
+
+### What we built
+We created the first controlled side-effect layer in AI Release Engineer. It can take explicit file changes, apply them to a disposable copy of a repository, and run allowlisted validation commands inside a restricted Docker container.
+
+### Why it exists
+The planning agent can suggest what should change, but changing files and executing code are much higher-risk operations. They need a separate trust boundary.
+
+P1-T5 makes sure the original repository is not the place where experimental AI-generated changes execute.
+
+### Disposable workspace
+The source repository is copied into a temporary directory.
+
+All create/update operations happen in that copy. When the executor context ends, the temporary workspace is deleted.
+
+This gives us a simple rollback model for the local MVP: throw away the workspace.
+
+### Bounded file changes
+A FileChange says:
+- create or update;
+- which repository-relative path;
+- what text content should be written.
+
+The executor rejects:
+- absolute paths;
+- parent traversal such as `../`;
+- creates over existing files;
+- updates to missing files;
+- writes into missing parent directories;
+- writes through symlinks that resolve outside the workspace.
+
+Deletion is intentionally not supported yet.
+
+### Command policy
+Commands are represented as argument lists, not shell strings, and `shell=True` is never used.
+
+The Phase 1 allowlist supports validation tools such as pytest, Ruff, and mypy, including their `python -m ...` form.
+
+Commands such as bash, sh, curl, `python -c`, and arbitrary Python modules are rejected by deterministic policy before Docker is invoked.
+
+### Docker isolation
+Allowed commands run in Docker with:
+- networking disabled;
+- all Linux capabilities dropped;
+- no-new-privileges enabled;
+- read-only container root filesystem;
+- bounded temporary filesystem;
+- PID, memory, CPU, and time limits;
+- only the disposable workspace mounted writable.
+
+Host environment variables are not passed into the container as command configuration.
+
+### ToolResult evidence
+The runner captures:
+- success/failure;
+- exit code;
+- stdout;
+- stderr;
+- execution duration.
+
+Output is truncated at a configured maximum so one command cannot create unbounded logs or evidence.
+
+If a command times out, the result records that timeout and the runner attempts to force-remove the named container.
+
+### Why the executor and runner are separate
+IsolatedChangeExecutor owns the software workflow: disposable workspace plus file changes.
+
+DockerCommandRunner owns command isolation.
+
+Keeping them separate lets us replace or harden the execution backend later without rewriting the file-change workflow.
+
+### How we test it
+Tests verify that:
+- the source repository is unchanged;
+- temporary workspaces disappear after use;
+- safe create/update operations work;
+- unsafe paths and symlinks are rejected;
+- unsafe commands are rejected;
+- Docker security flags are present;
+- stdout is bounded;
+- timeouts produce evidence and cleanup attempts.
+
+CI mocks Docker process execution for deterministic unit tests, so the test suite does not pull an external image.
+
+### Interview explanation
+> I separated AI reasoning from side effects. Approved file mutations are applied only to a disposable repository copy, and command execution is behind a deterministic allowlist and a Docker isolation boundary. The container has no network, no Linux capabilities, a read-only root filesystem, resource and time limits, and only the temporary workspace mounted writable. The runner captures deterministic execution evidence rather than trusting the model's claim that a change works.
+
+### Key design lesson
+A safe engineering agent should not translate model text directly into host shell access. Side effects belong behind explicit policies, disposable state, and isolation boundaries.
