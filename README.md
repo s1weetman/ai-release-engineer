@@ -441,6 +441,6 @@ The failure command exits with status code `2` intentionally because the validat
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T7 — MVP Demo Scenario (implementation branch active; validation pending)
+**Current task:** P1-T7 — MVP Demo Scenario (PR #7 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
