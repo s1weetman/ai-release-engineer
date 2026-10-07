@@ -1,8 +1,8 @@
 """Read-only repository analysis with strict workspace boundaries."""
 
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-import subprocess
 
 
 class UnsafeRepositoryPathError(ValueError):
