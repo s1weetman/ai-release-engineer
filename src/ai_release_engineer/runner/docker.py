@@ -1,9 +1,10 @@
 """Docker-backed command runner for disposable execution workspaces."""
 
 import subprocess
+from collections.abc import Sequence
+from contextlib import suppress
 from pathlib import Path
 from time import perf_counter
-from typing import Sequence
 from uuid import uuid4
 
 from ai_release_engineer.models.results import ToolResult
@@ -130,7 +131,7 @@ class DockerCommandRunner:
 
     def _force_remove(self, container_name: str) -> None:
         """Best-effort cleanup when the Docker CLI call times out."""
-        try:
+        with suppress(FileNotFoundError, subprocess.TimeoutExpired):
             subprocess.run(
                 ["docker", "rm", "-f", container_name],
                 check=False,
@@ -138,8 +139,6 @@ class DockerCommandRunner:
                 text=True,
                 timeout=10,
             )
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            pass
 
     def _truncate(self, value: str) -> str:
         """Cap tool output so one command cannot create unbounded evidence."""
