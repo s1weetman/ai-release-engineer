@@ -32,15 +32,18 @@
 ## Why P1-T6 matters
 P1-T5 gave the system a controlled place to make changes and run commands. P1-T6 turns those actions into evidence that a human and later policy code can review. The AI does not get to declare its own work successful; success is derived from deterministic validation results.
 
-## Validation remaining
-1. Open the P1-T6 pull request.
-2. Run Ruff lint and formatting.
-3. Run mypy.
-4. Run pytest.
-5. Fix every failure and rerun until the full Quality workflow is green.
-6. Keep P1-T6 unmerged until validation succeeds.
+## Validation status
+- PR #6 is open.
+- Ruff lint passed.
+- Ruff formatting passed.
+- mypy passed.
+- pytest passed (62 tests).
+- The complete pull-request Quality workflow is green.
+
+## Remaining step
+Merge PR #6 into main, then confirm the post-merge main Quality workflow remains green.
 
 ## Blockers
 None currently.
 
-Do not mark P1-T6 complete until all roadmap acceptance criteria are validated.
+P1-T6 implementation and pull-request validation are complete; merge/post-merge verification remain.
