@@ -341,6 +341,6 @@ The Docker runner is intentionally separate from the high-level executor so the 
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T5 — Isolated Change Executor (implementation branch active; validation pending)
+**Current task:** P1-T5 — Isolated Change Executor (PR #5 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
