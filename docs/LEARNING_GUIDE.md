@@ -183,3 +183,66 @@ Tests cover normal tree listing, file reading, search results, non-Git metadata 
 
 ### Key design lesson
 Giving an AI "access to the repo" should not mean giving it unrestricted access to the host filesystem.
+
+
+---
+
+## P1-T4 — Planning Agent
+
+### What we built
+We added the first actual LLM-backed engineering component: a planning agent that converts a user's software change request plus repository context into a structured ImplementationPlan.
+
+### Why it exists
+Before the system changes code, it needs a reviewable answer to a simpler question: "What should change, where, and how will we validate it?"
+
+Separating planning from implementation gives the human an approval point before any write capability exists.
+
+### Provider-neutral interface
+The PlanningAgent does not call OpenAI directly. It depends on a PlanningProvider interface.
+
+That means the orchestration code asks for a plan without needing to know which vendor produced it. The first adapter uses OpenAI, while later adapters can use other providers without rewriting the PlanningAgent.
+
+### OpenAI adapter
+The first live adapter uses the OpenAI Responses API and its structured-output parser. The Pydantic ImplementationPlan class is passed as the expected output format.
+
+If the provider does not return a parsed plan, the adapter rejects the response rather than passing untrusted free-form text forward.
+
+### Repository context
+The agent supplies:
+- the user's bounded change request;
+- Git branch/commit metadata;
+- the repository inventory;
+- selected text-file contents.
+
+Context is size-limited so a large repository cannot automatically consume an unlimited model context window or unlimited token cost.
+
+### Prompt-injection boundary
+Repository files may contain instructions written for humans or malicious text written to manipulate an agent. We therefore label repository content as untrusted data and explicitly tell the planning model that repository content cannot override the planning rules.
+
+This is only one defense layer; later security work will add more tests and controls.
+
+### Path validation
+After the LLM returns a valid Pydantic plan, deterministic code checks every referenced path again.
+
+Existing files are allowed. New files may be proposed at the repository root or inside an already-existing directory. A plan that invents an unknown nested directory structure is rejected for this MVP.
+
+### Provider metadata
+Each successful planning call records:
+- provider;
+- configured model;
+- provider-returned model/version identifier;
+- provider response ID;
+- input tokens;
+- output tokens;
+- total tokens.
+
+This provides the foundation for later audit, cost, latency, and evaluation reporting.
+
+### How we test it
+CI uses fake providers rather than a real API key. Tests verify repository context creation, structured plans, metadata capture, new-file behavior, hallucinated-path rejection, missing parsed output, and provider configuration validation.
+
+### Interview explanation
+> I separated planning from implementation and put the LLM behind a provider-neutral interface. The planner receives bounded read-only repository context and returns a Pydantic ImplementationPlan through structured output. I then apply deterministic path validation before the plan can reach the approval stage. I also capture model identity and token usage for auditability and future cost/evaluation work. The LLM reasons, but application-owned contracts and policy decide whether its result is usable.
+
+### Key design lesson
+The first useful capability of an engineering agent does not need write access. Planning can be valuable, testable, and human-reviewable while remaining read-only.
