@@ -4,10 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from ai_release_engineer.repository import (
-    RepositoryService,
-    UnsafeRepositoryPathError,
-)
+from ai_release_engineer.repository import RepositoryService, UnsafeRepositoryPathError
 
 
 FIXTURE_ROOT = Path(__file__).parents[1] / "fixtures" / "sample_repo"
