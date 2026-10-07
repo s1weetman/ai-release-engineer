@@ -117,3 +117,20 @@ Commands are supplied as argument arrays, validated against a small tool allowli
 Supported commands execute in a Docker container with network disabled, Linux capabilities dropped, no-new-privileges enabled, a read-only root filesystem, resource/time limits, and the disposable repository mounted as the intended writable workspace.
 
 **Reason:** Validation commands execute repository code and therefore require stronger isolation than a changed working directory alone.
+
+
+---
+
+## ADR-020 — Validation success is derived from evidence
+**Status:** Accepted  
+The application does not accept a caller-supplied success flag for the validation stage. A deterministic ValidationGate passes only when validation evidence exists and every required result is PASSED.
+
+**Reason:** The LLM or orchestration layer must not be able to self-certify generated code. Failed, skipped, or absent validation evidence is not sufficient to advance as successful.
+
+---
+
+## ADR-021 — Evidence bundles are versioned structured data
+**Status:** Accepted  
+Change-run evidence is represented as a versioned Pydantic EvidenceBundle containing request, plan, model metadata, diff/change summary, raw tool results, normalized validations, and approvals.
+
+**Reason:** Evidence will later cross API, persistence, audit, and UI boundaries. A versioned schema makes those records machine-readable, reviewable, and evolvable.
