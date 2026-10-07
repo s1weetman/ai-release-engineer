@@ -69,3 +69,26 @@ The core AI Release Engineer workflow ends after an approved pull request is pre
 Core workflow information is represented by validated Pydantic models rather than loosely structured dictionaries or unvalidated model output.
 
 **Reason:** The LLM is probabilistic, while the application needs deterministic contracts. Runtime schema validation provides a clear boundary for rejecting malformed, incomplete, unexpected, or unsafe data before downstream actions occur.
+
+
+## ADR-014 — Planning uses a provider-neutral interface
+**Status:** Accepted  
+The PlanningAgent depends on an internal PlanningProvider protocol rather than directly on a vendor SDK.
+
+**Reason:** Model vendors, model versions, pricing, and capabilities change independently from the product workflow. Keeping vendor code behind an adapter makes the planning logic mockable, testable, and replaceable.
+
+---
+
+## ADR-015 — First planning adapter uses structured Responses API output
+**Status:** Accepted  
+The first live planning adapter uses OpenAI's Responses API structured-output parsing into the existing ImplementationPlan Pydantic model.
+
+**Reason:** The model should return application-owned structured data rather than free-form prose that downstream code tries to interpret. A missing parsed plan is treated as a provider failure.
+
+---
+
+## ADR-016 — Planning remains read-only
+**Status:** Accepted  
+P1-T4 can inspect repository context and propose an implementation plan but has no file-write, command-execution, commit, or merge authority.
+
+**Reason:** Separating reasoning from side effects creates a clear human-review boundary and keeps the first LLM capability low-risk.
