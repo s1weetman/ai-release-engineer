@@ -339,3 +339,124 @@ CI mocks Docker process execution for deterministic unit tests, so the test suit
 
 ### Key design lesson
 A safe engineering agent should not translate model text directly into host shell access. Side effects belong behind explicit policies, disposable state, and isolation boundaries.
+
+
+---
+
+## P1-T6 — Validation and Evidence Bundle
+
+### What we built
+We built the layer that converts file changes and command execution into a structured record of what actually happened.
+
+### Why it exists
+An AI system should not be allowed to say, "I changed the code and everything passed," and have the application simply believe it.
+
+The system needs independent evidence:
+- what files changed;
+- what the diff contains;
+- which validation commands ran;
+- whether each validation passed or failed;
+- what model produced the plan;
+- what human approvals exist.
+
+P1-T6 packages that evidence into one versioned object.
+
+### Validation categories
+Every normalized validation result has one of four categories:
+
+**TEST**  
+Behavioral or integration tests such as pytest.
+
+**LINT**  
+Static code-quality/style checks such as Ruff.
+
+**TYPE**  
+Static type validation such as mypy.
+
+**SECURITY**  
+Security-scan evidence. The schema exists now so security results use the same evidence model; fuller scanner integration is expanded later in the roadmap.
+
+### Raw result versus normalized result
+A ToolResult is the raw execution record:
+- command/tool name;
+- exit code;
+- stdout;
+- stderr;
+- duration;
+- success flag.
+
+A ValidationResult translates that raw result into engineering meaning:
+- test/lint/type/security;
+- named validation gate;
+- passed/failed/skipped;
+- command;
+- reviewable details;
+- duration.
+
+We retain both because normalized status is convenient for policy while raw tool evidence is useful for debugging and audit.
+
+### ValidationGate
+The ValidationGate is deterministic policy.
+
+It passes only when:
+1. validation evidence exists; and
+2. every required result is PASSED.
+
+A FAILED result blocks success. A SKIPPED result also does not count as passed. No results does not count as passed.
+
+This is intentionally stricter than asking the LLM whether the change looks correct.
+
+### Change summary and diff
+ChangeSummaryBuilder compares the original repository with the disposable workspace for the explicit FileChange records.
+
+It produces:
+- changed file path;
+- create/update operation;
+- additions;
+- deletions;
+- total files changed;
+- total additions/deletions;
+- unified diff.
+
+The unified diff is bounded so an unusually large change cannot create unlimited evidence size.
+
+### EvidenceBundle
+EvidenceBundle is the review package for one run.
+
+It contains:
+- schema version;
+- run ID;
+- timestamp;
+- original change request;
+- approved implementation plan;
+- model/provider identity and token usage when available;
+- change summary and diff;
+- raw tool results;
+- normalized validation results;
+- approval records.
+
+The overall status is computed from validation evidence. The caller cannot simply set `status="passed"`.
+
+### Why version the evidence schema
+The bundle uses a schema version because this structure will eventually be stored, sent through APIs, shown in the SaaS UI, and possibly retained for audit.
+
+When fields evolve later, versioning gives us a way to understand old evidence records.
+
+### How we test it
+Unit tests verify:
+- all four validation categories;
+- failed validation blocks the gate;
+- skipped/missing validation does not pass;
+- file addition/deletion counts;
+- unified-diff contents;
+- diff truncation;
+- provider metadata normalization;
+- approval retention;
+- JSON serialization;
+- overall failed status when any validation fails.
+
+### Interview explanation
+> I treated evidence as a first-class domain object rather than a log message. Raw command results are normalized into typed test, lint, type, and security validation records. A deterministic gate derives whether validation passed, so the model cannot self-certify its work. I also generate a bounded unified diff and assemble the request, plan, model metadata, changes, tool evidence, validations, and approvals into a versioned Pydantic EvidenceBundle that can be serialized and later stored or rendered in the SaaS review experience.
+
+### Key design lesson
+In an agentic system, an audit trail should be structured data that policy can evaluate, not just prose written by the AI.
