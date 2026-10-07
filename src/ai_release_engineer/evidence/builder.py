@@ -8,9 +8,9 @@ from ai_release_engineer.evidence.diff import ChangeSummaryBuilder
 from ai_release_engineer.models.approval import ApprovalRecord
 from ai_release_engineer.models.change_request import ChangeRequest
 from ai_release_engineer.models.changes import FileChange
-from ai_release_engineer.models.evidence import EvidenceBundle, ModelCallEvidence
+from ai_release_engineer.models.evidence import EvidenceBundle, EvidenceStatus, ModelCallEvidence
 from ai_release_engineer.models.plan import ImplementationPlan
-from ai_release_engineer.models.results import ToolResult, ValidationResult
+from ai_release_engineer.models.results import ToolResult, ValidationResult, ValidationStatus
 from ai_release_engineer.providers.base import ProviderCallMetadata
 
 
@@ -44,9 +44,8 @@ class EvidenceBuilder:
             self._model_call_evidence(provider_metadata) if provider_metadata is not None else None
         )
         validation_passed = bool(validations) and all(
-            result.status.value == "passed" for result in validations
+            result.status is ValidationStatus.PASSED for result in validations
         )
-        from ai_release_engineer.models.evidence import EvidenceStatus
 
         return EvidenceBundle(
             run_id=run_id,
