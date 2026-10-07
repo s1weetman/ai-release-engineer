@@ -460,3 +460,98 @@ Unit tests verify:
 
 ### Key design lesson
 In an agentic system, an audit trail should be structured data that policy can evaluate, not just prose written by the AI.
+
+
+---
+
+## P1-T7 — MVP Demo Scenario
+
+### What we built
+We connected the Phase 1 engine pieces into one runnable demonstration.
+
+The target is a deliberately tiny greeting-service repository. The requested feature is:
+
+> Add an optional `excited` flag to `greet()`, keep the normal greeting unchanged, return the complete greeting in uppercase when excited, and add a regression test.
+
+### Why a tiny target repository
+The purpose of P1-T7 is to prove the architecture, not impress people with the complexity of the demo application.
+
+A small target makes it easy to see:
+- the request;
+- the repository before the change;
+- the plan;
+- the exact change;
+- the validation evidence;
+- the diff;
+- the pass/fail decision.
+
+### End-to-end flow
+The demo now exercises:
+
+1. RepositoryService reads the target repository.
+2. PlanningAgent builds bounded repository context.
+3. DemoPlanningProvider returns a structured ImplementationPlan through the same provider-neutral interface used by live LLM providers.
+4. An ApprovalRecord represents the Phase 1 plan-approval checkpoint.
+5. IsolatedChangeExecutor creates a disposable repository copy.
+6. Explicit FileChange objects implement the bounded feature inside that copy.
+7. DockerCommandRunner executes pytest, Ruff, and mypy.
+8. ValidationPipeline normalizes the results.
+9. ValidationGate derives whether the change can pass.
+10. EvidenceBuilder creates the versioned JSON EvidenceBundle.
+11. The disposable workspace is deleted; the original demo repository stays unchanged.
+
+### Why the demo provider is deterministic
+A portfolio demo must be repeatable.
+
+If every demo depended on a live LLM:
+- the response could vary;
+- an API key would be required;
+- cost and rate limits could interfere;
+- failures could come from the provider rather than our engineering system.
+
+So P1-T7 uses a deterministic planning adapter while still exercising the real PlanningProvider boundary.
+
+The real OpenAI adapter from P1-T4 remains available and tested separately.
+
+### Why the code change is scenario-specific in Phase 1
+Phase 1 proves the control plane around code change execution: safe repository access, planning, approval, isolated changes, validation, evidence, and gating.
+
+The demo FileChange objects are predefined for this bounded scenario. They are not presented as autonomous AI code generation.
+
+Phase 2 expands the approved-plan-to-patch workflow when we introduce real GitHub branches and patch preparation.
+
+### Success scenario
+`make demo-success` produces the correct implementation.
+
+Expected outcome:
+- pytest passes;
+- Ruff passes;
+- mypy passes;
+- ValidationGate passes;
+- EvidenceBundle status is `passed`.
+
+### Failure scenario
+`make demo-failure` deliberately implements the excited greeting incorrectly.
+
+Expected outcome:
+- pytest fails;
+- other checks can still run;
+- ValidationGate blocks success;
+- EvidenceBundle status is `failed`;
+- CLI returns exit code 2 intentionally.
+
+This is important because a useful engineering agent must demonstrate not only that good changes can pass, but that bad changes are stopped.
+
+### Docker image
+The demo Dockerfile installs the same development/validation tooling used by the project. Image creation can use the network, but execution of repository validation still goes through DockerCommandRunner with runtime networking disabled.
+
+### Evidence artifact
+Each demo writes structured JSON under `.demo-output/`.
+
+That file is intentionally not committed. It represents per-run evidence that a later SaaS version would store in persistent application storage.
+
+### Interview explanation
+> For the Phase 1 milestone, I built a reproducible end-to-end demo that exercises repository analysis, structured planning, an approval checkpoint, disposable code changes, isolated validation, a deterministic pass/fail gate, and a versioned evidence bundle. I deliberately made the demo provider deterministic so the architecture can be demonstrated without API keys or nondeterministic model behavior. I also included an intentional failure scenario to prove that the system blocks bad changes rather than merely demonstrating a happy path.
+
+### Key design lesson
+A credible engineering demo should make failure observable and controlled, not just show a successful golden path.
