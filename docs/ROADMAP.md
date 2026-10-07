@@ -68,7 +68,7 @@ Least-privilege integration, safe credential handling, mockable client.
 CLI/API intake, optional GitHub issue ingestion, sanitization, auditable run ID.
 
 ## P2-T3 — Branch and Patch Workflow
-Isolated branch, bounded writes, commit/diff metadata, never write directly to default branch.
+Approved-plan-to-patch generation, isolated branch, bounded writes, commit/diff metadata, and never write directly to the default branch.
 
 ## P2-T4 — Automated Test and Security Gate
 Tests, lint, type, security, secret checks; deterministic pass/fail policy.
