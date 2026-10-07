@@ -35,15 +35,18 @@
 ## Why P1-T5 matters
 P1-T4 allowed the AI to reason about code without changing it. P1-T5 creates a separate side-effect boundary where approved changes can be applied to a disposable copy and validation commands can run without giving model output unrestricted host-shell access.
 
-## Validation remaining
-1. Open the P1-T5 pull request.
-2. Run Ruff lint and formatting.
-3. Run mypy.
-4. Run pytest.
-5. Fix every failure and rerun until the full Quality workflow is green.
-6. Keep P1-T5 unmerged until validation succeeds.
+## Validation status
+- PR #5 is open.
+- Ruff lint passed.
+- Ruff formatting passed.
+- mypy passed.
+- pytest passed (55 tests).
+- The complete pull-request Quality workflow is green.
+
+## Remaining step
+Merge PR #5 into main, then confirm the post-merge main Quality workflow remains green.
 
 ## Blockers
 None currently.
 
-Do not mark P1-T5 complete until all roadmap acceptance criteria are validated.
+P1-T5 implementation and pull-request validation are complete; merge/post-merge verification remain.
