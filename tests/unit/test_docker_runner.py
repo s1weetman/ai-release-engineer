@@ -41,6 +41,9 @@ def test_docker_runner_builds_restricted_command_and_captures_output(
     assert isinstance(command, list)
     assert "--network" in command
     assert "none" in command
+    assert "--read-only" in command
+    assert "--tmpfs" in command
+    assert "/tmp:rw,noexec,nosuid,size=64m" in command
     assert "--cap-drop" in command
     assert "ALL" in command
     assert "no-new-privileges" in command
