@@ -25,3 +25,6 @@ htmlcov/
 .idea/
 .vscode/
 .DS_Store
+
+# Local MVP demo evidence
+.demo-output/
