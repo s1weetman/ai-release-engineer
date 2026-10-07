@@ -1,7 +1,7 @@
 """Deterministic command policy for the Phase 1 executor."""
 
+from collections.abc import Sequence
 from pathlib import PurePath
-from typing import Sequence
 
 
 class UnsafeCommandError(ValueError):
