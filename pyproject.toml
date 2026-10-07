@@ -39,6 +39,9 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["ai_release_engineer"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = true
