@@ -360,6 +360,6 @@ The Phase 1 security result is a typed evidence category. Full production securi
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T6 — Validation and Evidence Bundle (implementation branch active; validation pending)
+**Current task:** P1-T6 — Validation and Evidence Bundle (PR #6 open; quality validation passed; awaiting merge)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
