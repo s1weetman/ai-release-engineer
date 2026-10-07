@@ -304,9 +304,25 @@ P1-T3 gives the engine safe, read-only visibility into a local repository. The n
 
 A dedicated fixture repository is included so repository analysis can be tested repeatedly without depending on a developer's real project.
 
+## P1-T4 planning agent
+
+P1-T4 connects the repository-analysis layer to an LLM through a provider-neutral planning interface.
+
+The planning agent now:
+
+- builds a bounded repository context from the tree, Git metadata, and selected text files;
+- labels repository contents as untrusted data to reduce prompt-injection risk;
+- sends planning work through a provider interface rather than coupling orchestration directly to one vendor;
+- includes an OpenAI Responses API adapter using Pydantic structured output;
+- captures provider, requested model, resolved model/version, response ID, and token usage;
+- rejects plans that reference implausible repository structure;
+- remains read-only: it creates a plan but does not modify code.
+
+The local MVP uses an environment-provided OpenAI API key when a live provider call is made. Unit tests use mock providers and never require a real secret.
+
 ## Status
 
 **Current phase:** Phase 1  
-**Current task:** P1-T3 — Repository Analysis Tools (implementation branch active; validation pending)
+**Current task:** P1-T4 — Planning Agent (implementation branch active; validation pending)
 
 See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for live status.
