@@ -12,6 +12,7 @@ authors = [
   { name = "Steve Weetman" }
 ]
 dependencies = [
+  "openai>=2.11,<3",
   "pydantic>=2.10,<3",
   "pydantic-settings>=2.7,<3"
 ]
