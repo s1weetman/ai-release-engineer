@@ -1,6 +1,7 @@
 """Tests for disposable workspaces and bounded file changes."""
 
 from pathlib import Path
+from typing import Sequence
 
 import pytest
 from pydantic import ValidationError
@@ -25,9 +26,9 @@ class FakeRunner:
         self.workspace: Path | None = None
         self.argv: tuple[str, ...] | None = None
 
-    def run(self, *, workspace: Path, argv: tuple[str, ...]) -> ToolResult:
+    def run(self, *, workspace: Path, argv: Sequence[str]) -> ToolResult:
         self.workspace = workspace
-        self.argv = argv
+        self.argv = tuple(argv)
         return ToolResult(
             tool_name="fake",
             success=True,
