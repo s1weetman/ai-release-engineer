@@ -183,6 +183,37 @@ Use deterministic code for:
 - repository permissions;
 - release policy.
 
+## Phase 1 execution boundary
+
+The P1-T5 execution path separates repository mutation from command execution:
+
+```text
+Approved FileChange objects
+          |
+          v
+DisposableWorkspace
+(temp repository copy)
+          |
+          v
+IsolatedChangeExecutor
+          |
+          +--> bounded create/update operations
+          |
+          v
+CommandPolicy
+(allowlisted argv only)
+          |
+          v
+DockerCommandRunner
+(no network / dropped capabilities / read-only root / resource limits)
+          |
+          v
+ToolResult
+(exit / stdout / stderr / duration)
+```
+
+The original source repository is not modified by this path. Docker is used for command execution because repository code is treated as untrusted. The runner backend remains an interface so a future managed or self-hosted worker can replace the local Docker implementation without changing higher-level orchestration.
+
 ## Deployment model
 
 Initial target: cloud-hosted SaaS control plane plus isolated execution workers.
