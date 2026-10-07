@@ -13,6 +13,7 @@ from ai_release_engineer.models import (
     ImplementationPlan,
     PlanStep,
     ToolResult,
+    ValidationKind,
     ValidationResult,
     ValidationStatus,
     WorkflowRun,
@@ -78,12 +79,14 @@ def test_tool_and_validation_results_are_typed() -> None:
         duration_ms=250,
     )
     validation = ValidationResult(
+        kind=ValidationKind.TEST,
         name="unit-tests",
         status=ValidationStatus.PASSED,
         details=tool.stdout,
         duration_ms=tool.duration_ms,
     )
 
+    assert validation.kind is ValidationKind.TEST
     assert validation.status is ValidationStatus.PASSED
 
 
