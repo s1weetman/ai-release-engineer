@@ -88,9 +88,8 @@ class DisposableWorkspace:
         elif change.operation is ChangeOperation.UPDATE and (
             not target.exists() or not target.is_file()
         ):
-            raise FileChangeConflictError(
-                f"update target is not an existing file: {change.path}"
-            )
+            message = f"update target is not an existing file: {change.path}"
+            raise FileChangeConflictError(message)
 
         target.write_text(change.content, encoding="utf-8")
         return target
