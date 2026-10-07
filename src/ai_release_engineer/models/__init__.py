@@ -4,7 +4,12 @@ from ai_release_engineer.models.approval import ApprovalDecision, ApprovalRecord
 from ai_release_engineer.models.change_request import ChangeRequest
 from ai_release_engineer.models.changes import ChangeOperation, FileChange
 from ai_release_engineer.models.plan import ImplementationPlan, PlanStep
-from ai_release_engineer.models.results import ToolResult, ValidationResult, ValidationStatus
+from ai_release_engineer.models.results import (
+    ToolResult,
+    ValidationKind,
+    ValidationResult,
+    ValidationStatus,
+)
 from ai_release_engineer.models.workflow import WorkflowRun, WorkflowState
 
 __all__ = [
@@ -17,6 +22,7 @@ __all__ = [
     "ImplementationPlan",
     "PlanStep",
     "ToolResult",
+    "ValidationKind",
     "ValidationResult",
     "ValidationStatus",
     "WorkflowRun",
