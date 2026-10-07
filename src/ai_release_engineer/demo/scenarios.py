@@ -58,9 +58,7 @@ def _plan() -> ImplementationPlan:
                 paths=("tests/test_excited.py",),
             ),
         ),
-        risks=(
-            "The default greeting behavior must remain backward compatible.",
-        ),
+        risks=("The default greeting behavior must remain backward compatible.",),
         validation_commands=(
             "python -m pytest -q",
             "python -m ruff check .",
